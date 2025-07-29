@@ -57,3 +57,31 @@ export const getSingleNews = async (
     next(err);
   }
 };
+
+export const updateNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const updated = await NewsService.updateNews(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: "News not found" });
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const deleted = await NewsService.deleteNews(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "News not found" });
+    res.json({ message: "News deleted" });
+  } catch (err) {
+    next(err);
+  }
+};
