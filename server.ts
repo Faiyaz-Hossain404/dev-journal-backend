@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import app from "./app";
+import { sequelize } from "./models";
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -9,11 +10,11 @@ const startServer = async () => {
     // await sequelize.authenticate();
     // console.log("✅ DB connection synced");
 
-    // await sequelize.sync({
-    //   force: false,
-    //   alter: process.env.NODE_ENV === "development",
-    // });
-    // console.log("✅ DB models synced");
+    await sequelize.sync({
+      force: false,
+      // alter: process.env.NODE_ENV === "development",
+    });
+    console.log("✅ DB models synced");
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

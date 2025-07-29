@@ -3,7 +3,7 @@ import { Sequelize } from "sequelize";
 
 dotenv.config();
 
-export default sequelize = new Sequelize({
+const sequelize = new Sequelize({
   dialect: "postgres",
   host: process.env.DB_HOST,
   username: process.env.DB_USER,
@@ -17,3 +17,5 @@ export default sequelize = new Sequelize({
     idle: 10000,
   },
 });
+
+export default sequelize;
