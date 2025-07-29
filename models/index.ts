@@ -3,7 +3,7 @@ import { Comment } from "./comment.mode";
 import { News } from "./news.model";
 import { NewsToCategory } from "./newsToCategory.model";
 import { Upvote } from "./upvote.model";
-import { User } from "./user.mode";
+import { User } from "./user.model";
 import sequelize from "../config/db";
 import { SavedNews } from "./savedNews.model";
 
