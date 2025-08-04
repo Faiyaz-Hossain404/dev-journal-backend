@@ -20,11 +20,21 @@ export const register = async (
 
 export const login = async (email: string, password: string) => {
   const user = await User.findOne({ where: { email } });
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) {
+    console.log("No user with this email", email);
+    throw new Error("Invalid credentials");
+  }
+
+  console.log("User found:", user.email);
+  console.log("Hashed password:", user.password);
+  console.log("Inpurt password:", password);
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error("Invalid credentials");
+  if (!isMatch) {
+    console.log("Password mismatch");
 
+    throw new Error("Invalid credentials");
+  }
   const token = jwt.sign({ id: user.id, name: user.name }, JWT_SECRET, {
     expiresIn: "1h",
   });
