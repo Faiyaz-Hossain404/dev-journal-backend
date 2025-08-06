@@ -6,6 +6,7 @@ import { Upvote } from "./upvote.model";
 import { User } from "./user.model";
 import sequelize from "../config/db";
 import { SavedNews } from "./savedNews.model";
+import { Downvote } from "./downbote.model";
 
 User.hasMany(News, { foreignKey: "createdBy" });
 News.belongsTo(User, { foreignKey: "createdBy" });
@@ -20,6 +21,11 @@ User.hasMany(Upvote, { foreignKey: "userId" });
 News.hasMany(Upvote, { foreignKey: "newsId" });
 Upvote.belongsTo(User, { foreignKey: "userId" });
 Upvote.belongsTo(News, { foreignKey: "newsId" });
+
+User.hasMany(Downvote, { foreignKey: "uesrId" });
+Downvote.belongsTo(User, { foreignKey: "userId" });
+News.hasMany(Downvote, { foreignKey: "userId" });
+Downvote.belongsTo(News, { foreignKey: "newsId" });
 
 User.hasMany(SavedNews, { foreignKey: "userId" });
 News.hasMany(SavedNews, { foreignKey: "newsId" });
