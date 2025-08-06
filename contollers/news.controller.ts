@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as NewsService from "../services/news.service";
 import { CreateNewsDTO } from "../types/news.types";
+import { Upvote } from "../models";
 
 export const getAllNews = async (
   _req: Request,
@@ -81,6 +82,22 @@ export const deleteNews = async (
     const deleted = await NewsService.deleteNews(req.params.id);
     if (!deleted) return res.status(404).json({ error: "News not found" });
     res.json({ message: "News deleted" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const checkUpvoteStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    const hasUpvoted = await Upvote.findOne({ where: { userId, newsId: id } });
+    res.status(200).json({ hasUpvoted: !hasUpvoted });
   } catch (err) {
     next(err);
   }
