@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import * as UpvoteService from "../services/upvote.service";
+import { Request, Response, NextFunction } from "express";
+import * as DownvoteService from "../services/downvote.service";
 
-export const upvoteNews = async (
+export const downvoteNews = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -10,9 +10,9 @@ export const upvoteNews = async (
     const userId = (req.user as any).id;
     const { id: newsId } = req.params;
 
-    const result = await UpvoteService.addUpvote(userId, newsId);
+    const result = await DownvoteService.downvoteNews(userId, newsId);
     if (!result) {
-      return res.status(400).json({ error: "Already upvoted" });
+      return res.status(400).json({ error: "Already downvoted" });
     }
 
     return res.status(201).json(result);
@@ -21,7 +21,7 @@ export const upvoteNews = async (
   }
 };
 
-export const checkUpvoted = async (
+export const checkDownvoted = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -30,21 +30,21 @@ export const checkUpvoted = async (
     const userId = (req.user as any).id;
     const { id: newsId } = req.params;
 
-    const found = await UpvoteService.hasUserUpvoted(userId, newsId);
-    res.json({ hasUpvoted: !!found });
+    const found = await DownvoteService.hasUserDownvoted(userId, newsId);
+    res.json({ hasDownvoted: !!found });
   } catch (err) {
     next(err);
   }
 };
 
-export const getUpvoteCount = async (
+export const getDownvoteCount = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const { id: newsId } = req.params;
-    const count = await UpvoteService.countUpvotes(newsId);
+    const count = await DownvoteService.countDownvotes(newsId);
     res.json({ count });
   } catch (err) {
     next(err);

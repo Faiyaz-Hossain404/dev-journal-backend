@@ -6,6 +6,8 @@ export const hasUserUpvoted = async (userId: string, newsId: string) => {
 };
 
 export const addUpvote = async (userId: string, newsId: string) => {
+  const alreadyExists = await Upvote.findOne({ where: { userId, newsId } });
+  if (alreadyExists) return null;
   return await Upvote.create({ userId, newsId });
 };
 

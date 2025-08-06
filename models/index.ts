@@ -6,7 +6,7 @@ import { Upvote } from "./upvote.model";
 import { User } from "./user.model";
 import sequelize from "../config/db";
 import { SavedNews } from "./savedNews.model";
-import { Downvote } from "./downbote.model";
+import { Downvote } from "./downvote.model";
 
 User.hasMany(News, { foreignKey: "createdBy" });
 News.belongsTo(User, { foreignKey: "createdBy" });
