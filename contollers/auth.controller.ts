@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import * as AuthService from "../services/auth.service";
+import { User } from "../models";
 
 export const register = async (
   req: Request,
@@ -31,7 +32,13 @@ export const login = async (
 
 export const me = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    res.json(req.user);
+    const id = req.user?.id;
+    if (!id) return res.status(401).json({ error: "Unauthorized" });
+    const user = await User.findByPk(id, {
+      attributes: ["id", "name", "email", "createdAt"],
+    });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ user });
   } catch (err) {
     next(err);
   }

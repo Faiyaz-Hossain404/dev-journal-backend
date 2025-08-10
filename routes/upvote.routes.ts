@@ -5,6 +5,6 @@ import { requireAuth } from "../middleware/auth";
 const router = Router();
 
 router.post("/:id/upvote", requireAuth, UpvoteController.upvoteNews);
-router.post("/:id/upvote", requireAuth, UpvoteController.checkUpvoted);
+router.post("/:id/upvotes", requireAuth, UpvoteController.checkUpvoted);
 
 export default router;

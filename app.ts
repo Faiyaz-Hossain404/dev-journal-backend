@@ -7,6 +7,7 @@ import categoryRoutes from "./routes/category.routes";
 import authRoutes from "./routes/auth.routes";
 import { errorHandler } from "./middleware/errorHandler";
 import downvoteRoutes from "./routes/downvote.routes";
+import uploadRoutes from "./routes/upload.routes";
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/news/upvotes", upvoteRoutes);
 app.use("/api/news/downvotes", downvoteRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.use(errorHandler);
 
