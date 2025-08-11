@@ -25,7 +25,15 @@ export const login = async (
     const { email, password } = req.body;
     const { user, token } = await AuthService.login(email, password);
     res.json({ user, token });
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.message === "Invalid credentials") {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    if (err?.message?.includes("JWT_SECRET")) {
+      return res
+        .status(500)
+        .json({ error: "Server misconfig: JWT secret missing" });
+    }
     next(err);
   }
 };
