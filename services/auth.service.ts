@@ -29,6 +29,10 @@ export const login = async (email: string, password: string) => {
   console.log("Hashed password:", user.password);
   console.log("Inpurt password:", password);
 
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET is not set");
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     console.log("Password mismatch");
@@ -38,8 +42,7 @@ export const login = async (email: string, password: string) => {
   const token = jwt.sign({ id: user.id, name: user.name }, JWT_SECRET, {
     expiresIn: "1h",
   });
-
-  return { user, token };
+  return { user: { id: user.id, name: user.name, email: user.email }, token };
 };
 
 export const getUserFromToken = (token: string) => {

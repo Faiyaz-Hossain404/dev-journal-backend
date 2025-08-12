@@ -37,15 +37,48 @@ export const getUserNews = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user?.id || "00000000-0000-0000-0000-000000000000";
-    const news = await NewsService.getUserNews(userId);
-    res.json(news);
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const body = req.body as Partial<CreateNewsDTO> & { category?: string };
+
+    // Basic required-field checks
+    const required = [
+      "title",
+      "description",
+      "imageUrl",
+      "link",
+      "releaseDate",
+      "publisher",
+    ] as const;
+    for (const key of required) {
+      if (!body[key]) {
+        return res
+          .status(400)
+          .json({ error: `Missing required field: ${key}` });
+      }
+    }
+
+    // Normalize the category field (accept either 'category' or the existing 'catergory' key)
+    const normalized: CreateNewsDTO = {
+      title: body.title!,
+      description: body.description!,
+      imageUrl: body.imageUrl!,
+      link: body.link!,
+      releaseDate: body.releaseDate!,
+      publisher: body.publisher!,
+      // keep your existing DTO shape (typo included), but fill from either key
+      catergory: body.catergory ?? body.category, // <- normalization
+    };
+
+    const news = await NewsService.createNews(normalized, userId);
+    return res.status(201).json(news);
   } catch (err) {
     next(err);
   }
 };
 
-export const getSingleNews = async (
+export const getNewsById = async (
   req: Request,
   res: Response,
   next: NextFunction
