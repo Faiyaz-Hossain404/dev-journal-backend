@@ -10,12 +10,13 @@ export const upvoteNews = async (
     const userId = (req.user as any).id;
     const { id: newsId } = req.params;
 
-    const result = await UpvoteService.addUpvote(userId, newsId);
-    if (!result) {
+    const { created, upvotes } = await UpvoteService.addUpvote(userId, newsId);
+
+    if (!created) {
       return res.status(400).json({ error: "Already upvoted" });
     }
 
-    return res.status(201).json(result);
+    return res.status(201).json({ created, upvotes });
   } catch (err) {
     next(err);
   }

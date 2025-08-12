@@ -23,5 +23,9 @@ Upvote.init(
     sequelize,
     tableName: "upvotes",
     timestamps: true,
+    indexes: [
+      { unique: true, fields: ["userId", "newsId"] }, // <- important
+      { fields: ["newsId"] },
+    ],
   }
 );
