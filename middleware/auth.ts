@@ -15,13 +15,15 @@ export const requireAuth = (
     return res.status(401).json({ error: "Unauthorized" });
   }
 
+  const token = authHeader.slice(7);
+
   try {
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as {
+    const payload = jwt.verify(token, JWT_SECRET) as {
       id: string;
       name: string;
+      email?: string;
     };
-    req.user = decoded;
+    req.user = { id: payload.id, name: payload.name, email: payload.email };
     next();
   } catch {
     return res.status(401).json({ error: "Invalid token" });

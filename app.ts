@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/news", newsRoutes);
-app.use("/api/comments", commentRoutes);
+app.use("/api/news", commentRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/news/upvotes", upvoteRoutes);
