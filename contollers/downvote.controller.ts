@@ -7,15 +7,19 @@ export const downvoteNews = async (
   next: NextFunction
 ) => {
   try {
-    const userId = (req.user as any).id;
-    const { id: newsId } = req.params;
+    const userId = req.user!.id;
+    const newsId = req.params.id;
 
-    const result = await DownvoteService.downvoteNews(userId, newsId);
-    if (!result) {
-      return res.status(400).json({ error: "Already downvoted" });
+    const already = await DownvoteService.hasUserDownvoted(userId, newsId);
+    if (already) {
+      const count = await DownvoteService.countDownvotes(newsId);
+      return res.status(200).json({ downvotes: count, created: false });
     }
 
-    return res.status(201).json(result);
+    await DownvoteService.addDownvote(userId, newsId);
+    const count = await DownvoteService.countDownvotes(newsId);
+
+    return res.status(201).json({ downvotes: count, created: true });
   } catch (err) {
     next(err);
   }

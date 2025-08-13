@@ -8,15 +8,17 @@ export const upvoteNews = async (
 ) => {
   try {
     const userId = (req.user as any).id;
-    const { id: newsId } = req.params;
+    const newsId = req.params.id;
 
-    const { created, upvotes } = await UpvoteService.addUpvote(userId, newsId);
-
-    if (!created) {
-      return res.status(400).json({ error: "Already upvoted" });
+    const already = await UpvoteService.hasUserUpvoted(userId, newsId);
+    if (already) {
+      const count = await UpvoteService.countUpvotes(newsId);
+      return res.status(200).json({ upvotes: count, created: false }); // ← no 400
     }
 
-    return res.status(201).json({ created, upvotes });
+    await UpvoteService.addUpvote(userId, newsId);
+    const count = await UpvoteService.countUpvotes(newsId);
+    return res.status(201).json({ upvotes: count, created: true });
   } catch (err) {
     next(err);
   }

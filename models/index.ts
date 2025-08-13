@@ -22,7 +22,7 @@ News.hasMany(Upvote, { foreignKey: "newsId" });
 Upvote.belongsTo(User, { foreignKey: "userId" });
 Upvote.belongsTo(News, { foreignKey: "newsId" });
 
-User.hasMany(Downvote, { foreignKey: "uesrId" });
+User.hasMany(Downvote, { foreignKey: "userId" });
 Downvote.belongsTo(User, { foreignKey: "userId" });
 News.hasMany(Downvote, { foreignKey: "newsId" });
 Downvote.belongsTo(News, { foreignKey: "newsId" });
@@ -51,4 +51,5 @@ export {
   Category,
   NewsToCategory,
   SavedNews,
+  Downvote,
 };

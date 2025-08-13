@@ -21,7 +21,9 @@ export const createComment = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user?.id || "00000000-0000-0000-0000-000000000000";
+    const userId = req.user?.id;
+    if (!userId)
+      return res.status(403).json({ message: "You are not logged in!" });
     const { content } = req.body as CreateCommentDTO;
     const comment = await CommentService.createComment(
       req.params.id,

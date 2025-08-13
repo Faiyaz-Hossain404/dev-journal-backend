@@ -4,7 +4,7 @@ export const hasUserDownvoted = async (userId: string, newsId: string) => {
   return await Downvote.findOne({ where: { userId, newsId } });
 };
 
-export const downvoteNews = async (userId: string, newsId: string) => {
+export const addDownvote = async (userId: string, newsId: string) => {
   const existing = await hasUserDownvoted(userId, newsId);
   if (existing) return null;
 
