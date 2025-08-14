@@ -1,5 +1,5 @@
 import { Category } from "./category.model";
-import { Comment } from "./comment.mode";
+import { Comment } from "./comment.model";
 import { News } from "./news.model";
 import { NewsToCategory } from "./newsToCategory.model";
 import { Upvote } from "./upvote.model";
