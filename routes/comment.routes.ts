@@ -1,9 +1,10 @@
 import { Router } from "express";
 import * as CommentController from "../contollers/comment.controller";
+import { requireAuth } from "../middleware/auth";
 
 const router = Router();
 
 router.get("/:id/comments", CommentController.getCommentsByNewsId);
-router.post("/:id/comments", CommentController.createComment);
+router.post("/:id/comments", requireAuth, CommentController.createComment);
 
 export default router;
