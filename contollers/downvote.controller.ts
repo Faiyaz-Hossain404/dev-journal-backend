@@ -34,9 +34,8 @@ export const checkDownvoted = async (
   next: NextFunction
 ) => {
   try {
-    const userId = (req.user as any).id;
-    const { id: newsId } = req.params;
-
+    const userId = req.user!.id;
+    const newsId = req.params.id;
     const found = await DownvoteService.hasUserDownvoted(userId, newsId);
     res.json({ hasDownvoted: !!found });
   } catch (err) {
@@ -44,16 +43,16 @@ export const checkDownvoted = async (
   }
 };
 
-export const getDownvoteCount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id: newsId } = req.params;
-    const count = await DownvoteService.countDownvotes(newsId);
-    res.json({ count });
-  } catch (err) {
-    next(err);
-  }
-};
+// export const getDownvoteCount = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { id: newsId } = req.params;
+//     const count = await DownvoteService.countDownvotes(newsId);
+//     res.json({ count });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
