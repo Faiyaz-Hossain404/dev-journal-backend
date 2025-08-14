@@ -10,7 +10,7 @@ export const getAllNews = async (
 ) => {
   try {
     const news = await NewsService.getAllNews();
-    res.json(news); //200 ok status sent
+    res.json(news);
   } catch (error) {
     next(error);
   }
@@ -22,7 +22,7 @@ export const createNews = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user?.id || "00000000-0000-0000-0000-000000000000";
+    const userId = req.user!.id;
     const data = req.body as CreateNewsDTO;
     const news = await NewsService.createNews(data, userId);
     res.status(201).json(news);
