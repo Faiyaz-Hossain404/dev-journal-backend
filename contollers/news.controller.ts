@@ -40,39 +40,8 @@ export const getUserNews = async (
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
-    const body = req.body as Partial<CreateNewsDTO> & { category?: string };
-
-    // Basic required-field checks
-    const required = [
-      "title",
-      "description",
-      "imageUrl",
-      "link",
-      "releaseDate",
-      "publisher",
-    ] as const;
-    for (const key of required) {
-      if (!body[key]) {
-        return res
-          .status(400)
-          .json({ error: `Missing required field: ${key}` });
-      }
-    }
-
-    // Normalize the category field (accept either 'category' or the existing 'catergory' key)
-    const normalized: CreateNewsDTO = {
-      title: body.title!,
-      description: body.description!,
-      imageUrl: body.imageUrl!,
-      link: body.link!,
-      releaseDate: body.releaseDate!,
-      publisher: body.publisher!,
-      // keep your existing DTO shape (typo included), but fill from either key
-      catergory: body.catergory ?? body.category, // <- normalization
-    };
-
-    const news = await NewsService.createNews(normalized, userId);
-    return res.status(201).json(news);
+    const list = await NewsService.getUserNews(userId);
+    return res.status(200).json(list);
   } catch (err) {
     next(err);
   }
@@ -129,8 +98,8 @@ export const checkUpvoteStatus = async (
     const { id } = req.params;
     const userId = req.user?.id;
 
-    const hasUpvoted = await Upvote.findOne({ where: { userId, newsId: id } });
-    res.status(200).json({ hasUpvoted: !hasUpvoted });
+    const found = await Upvote.findOne({ where: { userId, newsId: id } });
+    res.status(200).json({ hasUpvoted: !!found });
   } catch (err) {
     next(err);
   }
