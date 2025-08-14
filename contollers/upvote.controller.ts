@@ -42,6 +42,22 @@ export const checkUpvoted = async (
   }
 };
 
+export const undoUpvote = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+    const newsId = req.params.id;
+    await UpvoteService.removeUpvote(userId, newsId);
+    const upvotes = await UpvoteService.countUpvotes(newsId);
+    const downvotes = await DownvoteService.countDownvotes(newsId);
+    return res.status(200).json({ upvotes, downvotes, deleted: true });
+  } catch (err) {
+    next(err);
+  }
+};
 // export const getUpvoteCount = async (
 //   req: Request,
 //   res: Response,

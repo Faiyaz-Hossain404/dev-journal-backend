@@ -6,5 +6,6 @@ const router = Router();
 
 router.post("/:id/upvote", requireAuth, UpvoteController.upvoteNews);
 router.get("/:id/upvotes", requireAuth, UpvoteController.checkUpvoted);
+router.delete("/:id/upvote", requireAuth, UpvoteController.undoUpvote);
 
 export default router;

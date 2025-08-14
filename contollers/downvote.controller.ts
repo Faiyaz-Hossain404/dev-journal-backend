@@ -43,6 +43,23 @@ export const checkDownvoted = async (
   }
 };
 
+export const undoDownvote = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+    const newsId = req.params.id;
+    await DownvoteService.removeDownvote(userId, newsId);
+    const downvotes = await DownvoteService.countDownvotes(newsId);
+    const upvotes = await UpvoteService.countUpvotes(newsId);
+    return res.status(200).json({ downvotes, upvotes, deleted: true });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // export const getDownvoteCount = async (
 //   req: Request,
 //   res: Response,
