@@ -5,12 +5,11 @@ import { requireAuth } from "../middleware/auth";
 const router = Router();
 
 router.get("/", NewsController.getAllNews);
-router.get("/:id", NewsController.getNewsById);
-
 router.post("/", requireAuth, NewsController.createNews);
 router.get("/my-news", requireAuth, NewsController.getUserNews);
-router.get("/:id", requireAuth, NewsController.updateNews);
-router.put("/:id", requireAuth, NewsController.deleteNews);
+router.get("/:id", NewsController.getNewsById);
+router.put("/:id", requireAuth, NewsController.updateNews);
+router.delete("/:id", requireAuth, NewsController.deleteNews);
 router.get("/:id/upvotes", requireAuth, NewsController.checkUpvoteStatus);
 
 export default router;
