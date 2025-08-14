@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as DownvoteService from "../services/downvote.service";
+import * as UpvoteService from "../services/upvote.service";
 
 export const downvoteNews = async (
   req: Request,
@@ -12,14 +13,16 @@ export const downvoteNews = async (
 
     const already = await DownvoteService.hasUserDownvoted(userId, newsId);
     if (already) {
-      const count = await DownvoteService.countDownvotes(newsId);
-      return res.status(200).json({ downvotes: count, created: false });
+      const downvotes = await DownvoteService.countDownvotes(newsId);
+      const upvotes = await UpvoteService.countUpvotes(newsId);
+      return res.status(200).json({ downvotes, upvotes, created: false });
     }
 
     await DownvoteService.addDownvote(userId, newsId);
-    const count = await DownvoteService.countDownvotes(newsId);
+    const downvotes = await DownvoteService.countDownvotes(newsId);
+    const upvotes = await UpvoteService.countUpvotes(newsId);
 
-    return res.status(201).json({ downvotes: count, created: true });
+    return res.status(201).json({ downvotes, upvotes, created: true });
   } catch (err) {
     next(err);
   }
