@@ -1,3 +1,4 @@
+import { userInfo } from "os";
 import { Comment, User } from "../models";
 
 export const getCommentsByNewsId = async (newsId: string) => {
@@ -22,4 +23,11 @@ export const createComment = async (
   return await Comment.findByPk(created.id, {
     include: [{ model: User, attributes: ["id", "name"] }],
   });
+};
+
+export const deleteComment = async (commentId: string, userId: string) => {
+  const existing = await Comment.findByPk(commentId);
+  if (!existing) throw new Error("Comment not found.");
+  if (existing.userId !== userId) throw new Error("Forbidden");
+  await existing.destroy();
 };
