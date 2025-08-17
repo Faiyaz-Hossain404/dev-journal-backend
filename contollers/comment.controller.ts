@@ -53,3 +53,29 @@ export const createComment = async (
     next(err);
   }
 };
+
+const deleteComment = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { commentId } = req.params;
+    const userId = req.user!.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: "You are not logged in!" });
+    }
+
+    await CommentService.deleteComment(commentId, userId);
+    return res.status(204).send();
+  } catch (err: any) {
+    if (err.message === "Comment not found.") {
+      return res.status(404).json({ error: "Comment not found" });
+    }
+    if (err.message === "Forbidden") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+    next(err);
+  }
+};
