@@ -9,7 +9,7 @@ export const getCommentsByNewsId = async (
 ) => {
   try {
     const newsId = req.params.id;
-    const comments = await CommentService.getCommentsByNewsId(req.params.id);
+    const comments = await CommentService.getCommentsByNewsId(newsId);
     res.json(comments);
   } catch (err) {
     next(err);
@@ -22,16 +22,33 @@ export const createComment = async (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user?.id;
-    if (!userId)
-      return res.status(403).json({ message: "You are not logged in!" });
-    const { content } = req.body as CreateCommentDTO;
+    const newsId = req.params.id;
+    const userId = req.user!.id;
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ error: "Content is required" });
+    }
+    if (!req.user?.id) {
+      return res.status(401).json({ error: "You are not logged in!" });
+    }
+
     const comment = await CommentService.createComment(
-      req.params.id,
+      newsId,
       userId,
-      content
+      content.trim()
     );
+
     res.status(201).json(comment);
+    // const userId = req.user?.id;
+    // if (!userId)
+    //   return res.status(403).json({ message: "You are not logged in!" });
+    // const { content } = req.body as CreateCommentDTO;
+    // const comment = await CommentService.createComment(
+    //   req.params.id,
+    //   userId,
+    //   content
+    // );
+    // res.status(201).json(comment);
   } catch (err) {
     next(err);
   }

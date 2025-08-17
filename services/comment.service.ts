@@ -1,4 +1,4 @@
-import { userInfo } from "os";
+// import { userInfo } from "os";
 import { Comment, User } from "../models";
 
 export const getCommentsByNewsId = async (newsId: string) => {
