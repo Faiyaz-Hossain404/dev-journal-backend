@@ -13,7 +13,7 @@ News.belongsTo(User, { foreignKey: "createdBy" });
 
 News.hasMany(Comment, { foreignKey: "newsId" });
 Comment.belongsTo(News, { foreignKey: "newsId" });
-Comment.belongsTo(User, { foreignKey: "userId" });
+Comment.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 User.hasMany(Comment, { foreignKey: "userId" });
 

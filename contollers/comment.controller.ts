@@ -54,7 +54,7 @@ export const createComment = async (
   }
 };
 
-const deleteComment = async (
+export const deleteComment = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -62,10 +62,8 @@ const deleteComment = async (
   try {
     const { commentId } = req.params;
     const userId = req.user!.id;
-
-    if (!userId) {
+    if (!userId)
       return res.status(401).json({ error: "You are not logged in!" });
-    }
 
     await CommentService.deleteComment(commentId, userId);
     return res.status(204).send();

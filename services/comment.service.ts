@@ -5,7 +5,7 @@ export const getCommentsByNewsId = async (newsId: string) => {
   return await Comment.findAll({
     where: { newsId },
     order: [["createdAt", "DESC"]],
-    include: [{ model: User, attributes: ["id", "name"] }],
+    include: [{ model: User, as: "user", attributes: ["id", "name"] }],
   });
 };
 
@@ -21,7 +21,7 @@ export const createComment = async (
   });
 
   return await Comment.findByPk(created.id, {
-    include: [{ model: User, attributes: ["id", "name"] }],
+    include: [{ model: User, as: "user", attributes: ["id", "name"] }],
   });
 };
 
