@@ -24,7 +24,7 @@ export const createComment = async (
   try {
     const newsId = req.params.id;
     const userId = req.user!.id;
-    const { content } = req.body;
+    const { content } = req.body as CreateCommentDTO;
     if (!content || !content.trim()) {
       return res.status(400).json({ error: "Content is required" });
     }
