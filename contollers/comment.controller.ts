@@ -8,6 +8,7 @@ export const getCommentsByNewsId = async (
   next: NextFunction
 ) => {
   try {
+    const newsId = req.params.id;
     const comments = await CommentService.getCommentsByNewsId(req.params.id);
     res.json(comments);
   } catch (err) {

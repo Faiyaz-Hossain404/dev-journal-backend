@@ -1,9 +1,10 @@
-import { Comment } from "../models";
+import { Comment, User } from "../models";
 
 export const getCommentsByNewsId = async (newsId: string) => {
   return await Comment.findAll({
     where: { newsId },
     order: [["createdAt", "DESC"]],
+    include: [{ model: User, attributes: ["id", "name"] }],
   });
 };
 
@@ -12,9 +13,13 @@ export const createComment = async (
   userId: string,
   content: string
 ) => {
-  return await Comment.create({
+  const created = await Comment.create({
     newsId,
     userId,
     content,
+  });
+
+  return await Comment.findByPk(created.id, {
+    include: [{ model: User, attributes: ["id", "name"] }],
   });
 };
