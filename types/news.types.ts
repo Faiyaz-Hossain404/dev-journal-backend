@@ -5,7 +5,7 @@ export interface CreateNewsDTO {
   link: string;
   releaseDate: string;
   publisher: string;
-  catergory?: string;
+  category?: string;
 }
 
 export interface UpdateNewsDTO extends Partial<CreateNewsDTO> {}
