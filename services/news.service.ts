@@ -1,4 +1,4 @@
-import { col, fn, Op, Sequelize, where } from "sequelize";
+import { col, fn, Op, Sequelize, where as sWhere } from "sequelize";
 import { Category, News } from "../models";
 import { CreateNewsDTO, UpdateNewsDTO } from "../types/news.types";
 
@@ -107,34 +107,50 @@ export const deleteNews = async (id: string) => {
   return true;
 };
 
-export async function listNews(q?: string) {
-  const like = q?.trim() ? `%${q.trim()}%` : null;
-
-  const whereClause = like
-    ? {
-        [Op.or]: [
-          { title: { [Op.iLike]: like } },
-          { description: { [Op.iLike]: like } }, //
-          { publisher: { [Op.iLike]: like } },
-          // Match joined category names in the OR as well:
-          where(fn("lower", col("categories.name")), {
-            [Op.like]: like!.toLowerCase(),
-          }),
-        ],
-      }
-    : undefined;
+export const searchNews = async (q: string) => {
+  const like = `%${q.trim()}%`;
 
   return await News.findAll({
-    where: whereClause,
+    attributes: {
+      include: [
+        [
+          Sequelize.literal(
+            `(SELECT COUNT(*) FROM "upvotes" u WHERE u."newsId" = "News"."id")`
+          ),
+          "upvotes",
+        ],
+        [
+          Sequelize.literal(
+            `(SELECT COUNT(*) FROM "downvotes" d WHERE d."newsId" = "News"."id")`
+          ),
+          "downvotes",
+        ],
+        [
+          Sequelize.literal(
+            `(SELECT COUNT(*) FROM "comments" c WHERE c."newsId" = "News"."id")`
+          ),
+          "commentsCount",
+        ],
+      ],
+    },
     include: [
       {
         model: Category,
-        as: "categories",
+        as: "categories", // ← alias (see association note below)
         attributes: ["id", "name"],
         through: { attributes: [] },
-        required: false, // keep all news even when no category match
+        required: false, // left join (so OR won’t drop non-categorized matches)
       },
     ],
+    where: {
+      [Op.or]: [
+        { title: { [Op.iLike]: like } },
+        { description: { [Op.iLike]: like } }, // if your model has it
+        { publisher: { [Op.iLike]: like } },
+        // allow category-name matches in the same OR:
+        sWhere(col(`categories.name`), { [Op.iLike]: like }),
+      ],
+    },
     order: [["createdAt", "DESC"]],
   });
-}
+};
