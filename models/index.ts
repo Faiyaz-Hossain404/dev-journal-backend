@@ -34,11 +34,13 @@ SavedNews.belongsTo(News, { foreignKey: "newsId" });
 
 Category.belongsToMany(News, {
   through: NewsToCategory,
+  as: "categories",
   foreignKey: "categoryId",
 });
 
 News.belongsToMany(Category, {
   through: NewsToCategory,
+  as: "news",
   foreignKey: "newsId",
 });
 
