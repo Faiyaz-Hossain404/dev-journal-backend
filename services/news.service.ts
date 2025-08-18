@@ -1,6 +1,7 @@
 import { col, fn, Op, Sequelize, where as sWhere } from "sequelize";
-import { Category, News } from "../models";
+import { Category, News, NewsToCategory } from "../models";
 import { CreateNewsDTO, UpdateNewsDTO } from "../types/news.types";
+import { normalizeCategories } from "./createNews.helper/createNews.helper";
 
 export const getAllNews = async () => {
   return await News.findAll({
@@ -31,7 +32,52 @@ export const getAllNews = async () => {
 };
 
 export const createNews = async (data: CreateNewsDTO, createdBy: string) => {
-  return await News.create({ ...data, createdBy });
+  const { category, ...rest } = data;
+  const names = normalizeCategories(category);
+
+  // 1) create the news row
+  const news = await News.create({ ...rest, createdBy });
+
+  // 2) upsert categories and link in the join table
+  if (names.length) {
+    const cats = await Promise.all(
+      names.map(async (name) => {
+        const [row] = await Category.findOrCreate({
+          where: { name },
+          defaults: { name },
+        });
+        return row;
+      })
+    );
+
+    const newsId = news.getDataValue("id") as string;
+
+    // No need for setCategories/$set — just insert join rows
+    await Promise.all(
+      cats.map(async (c) => {
+        const categoryId = c.getDataValue("id") as string;
+        await NewsToCategory.findOrCreate({
+          where: { newsId, categoryId },
+          defaults: { newsId, categoryId },
+        });
+      })
+    );
+  }
+
+  // 3) return with categories included (alias must match your association)
+  const withCats = await News.findByPk(news.getDataValue("id") as string, {
+    include: [
+      {
+        model: Category,
+        as: "categories", // ← use your actual alias here
+        attributes: ["id", "name"],
+        through: { attributes: [] },
+        required: false,
+      },
+    ],
+  });
+
+  return withCats!;
 };
 
 export const getUserNews = async (userId: string) => {
