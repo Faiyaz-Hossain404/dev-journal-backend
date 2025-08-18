@@ -4,12 +4,15 @@ import { CreateNewsDTO } from "../types/news.types";
 import { Upvote } from "../models";
 
 export const getAllNews = async (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const news = await NewsService.getAllNews();
+    const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+    const news = q
+      ? await NewsService.searchNews(q)
+      : await NewsService.getAllNews();
     res.json(news);
   } catch (error) {
     next(error);
