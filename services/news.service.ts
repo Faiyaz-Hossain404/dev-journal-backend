@@ -1,5 +1,5 @@
-import { Sequelize } from "sequelize";
-import { News } from "../models";
+import { Op, Sequelize } from "sequelize";
+import { Category, News } from "../models";
 import { CreateNewsDTO, UpdateNewsDTO } from "../types/news.types";
 
 export const getAllNews = async () => {
@@ -106,3 +106,38 @@ export const deleteNews = async (id: string) => {
   await news.destroy();
   return true;
 };
+
+export async function listNews(q?: string) {
+  const include = [
+    {
+      model: Category,
+      as: "categories",
+      through: { attributes: [] },
+      attributes: ["id", "name"],
+      required: false,
+    },
+  ];
+
+  if (!q || !q.trim()) {
+    return News.findAll({
+      include,
+      order: [["createdAt", "DESC"]],
+    });
+  }
+
+  const like = `%${q}%`;
+
+  return News.findAll({
+    include,
+    where: {
+      [Op.or]: [
+        { title: { [Op.iLike]: like } },
+        { description: { [Op.iLike]: like } },
+        { publisher: { [Op.iLike]: like } },
+        // match by category name via the included alias:
+        { "$categories.name$": { [Op.iLike]: like } },
+      ],
+    },
+    order: [["createdAt", "DESC"]],
+  });
+}
