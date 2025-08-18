@@ -1,4 +1,4 @@
-import { Op, Sequelize } from "sequelize";
+import { col, fn, Op, Sequelize, where } from "sequelize";
 import { Category, News } from "../models";
 import { CreateNewsDTO, UpdateNewsDTO } from "../types/news.types";
 
@@ -108,36 +108,33 @@ export const deleteNews = async (id: string) => {
 };
 
 export async function listNews(q?: string) {
-  const include = [
-    {
-      model: Category,
-      as: "categories",
-      through: { attributes: [] },
-      attributes: ["id", "name"],
-      required: false,
-    },
-  ];
+  const like = q?.trim() ? `%${q.trim()}%` : null;
 
-  if (!q || !q.trim()) {
-    return News.findAll({
-      include,
-      order: [["createdAt", "DESC"]],
-    });
-  }
+  const whereClause = like
+    ? {
+        [Op.or]: [
+          { title: { [Op.iLike]: like } },
+          { description: { [Op.iLike]: like } }, //
+          { publisher: { [Op.iLike]: like } },
+          // Match joined category names in the OR as well:
+          where(fn("lower", col("categories.name")), {
+            [Op.like]: like!.toLowerCase(),
+          }),
+        ],
+      }
+    : undefined;
 
-  const like = `%${q}%`;
-
-  return News.findAll({
-    include,
-    where: {
-      [Op.or]: [
-        { title: { [Op.iLike]: like } },
-        { description: { [Op.iLike]: like } },
-        { publisher: { [Op.iLike]: like } },
-        // match by category name via the included alias:
-        { "$categories.name$": { [Op.iLike]: like } },
-      ],
-    },
+  return await News.findAll({
+    where: whereClause,
+    include: [
+      {
+        model: Category,
+        as: "categories",
+        attributes: ["id", "name"],
+        through: { attributes: [] },
+        required: false, // keep all news even when no category match
+      },
+    ],
     order: [["createdAt", "DESC"]],
   });
 }
