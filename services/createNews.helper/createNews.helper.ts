@@ -4,7 +4,7 @@ export function normalizeCategories(input?: string | string[]) {
   const cleaned = arr
     .map((s) => s.trim())
     .filter(Boolean)
-    .map((s) => s.toLowerCase()) // normalize case
-    .filter((v, i, a) => a.indexOf(v) === i); // dedupe
+    .map((s) => s.toLowerCase())
+    .filter((v, i, a) => a.indexOf(v) === i);
   return cleaned;
 }

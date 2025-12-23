@@ -1,7 +1,9 @@
-import dotenv from "dotenv";
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 import app from "./app";
 import { sequelize } from "./models";
-dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 

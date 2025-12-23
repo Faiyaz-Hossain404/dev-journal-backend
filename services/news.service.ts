@@ -35,10 +35,10 @@ export const createNews = async (data: CreateNewsDTO, createdBy: string) => {
   const { category, ...rest } = data;
   const names = normalizeCategories(category);
 
-  // 1) create the news row
+  // create news row
   const news = await News.create({ ...rest, createdBy });
 
-  // 2) upsert categories and link in the join table
+  // upsert categories and link in the join table
   if (names.length) {
     const cats = await Promise.all(
       names.map(async (name) => {
@@ -52,7 +52,6 @@ export const createNews = async (data: CreateNewsDTO, createdBy: string) => {
 
     const newsId = news.getDataValue("id") as string;
 
-    // No need for setCategories/$set — just insert join rows
     await Promise.all(
       cats.map(async (c) => {
         const categoryId = c.getDataValue("id") as string;
@@ -64,12 +63,12 @@ export const createNews = async (data: CreateNewsDTO, createdBy: string) => {
     );
   }
 
-  // 3) return with categories included (alias must match your association)
+  //return with categories included (alias must match your association)
   const withCats = await News.findByPk(news.getDataValue("id") as string, {
     include: [
       {
         model: Category,
-        as: "categories", // ← use your actual alias here
+        as: "categories",
         attributes: ["id", "name"],
         through: { attributes: [] },
         required: false,
@@ -182,18 +181,17 @@ export const searchNews = async (q: string) => {
     include: [
       {
         model: Category,
-        as: "categories", // ← alias (see association note below)
+        as: "categories",
         attributes: ["id", "name"],
         through: { attributes: [] },
-        required: false, // left join (so OR won’t drop non-categorized matches)
+        required: false,
       },
     ],
     where: {
       [Op.or]: [
         { title: { [Op.iLike]: like } },
-        { description: { [Op.iLike]: like } }, // if your model has it
+        { description: { [Op.iLike]: like } },
         { publisher: { [Op.iLike]: like } },
-        // allow category-name matches in the same OR:
         sWhere(col(`categories.name`), { [Op.iLike]: like }),
       ],
     },

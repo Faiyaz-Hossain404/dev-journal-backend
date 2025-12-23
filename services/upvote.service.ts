@@ -1,4 +1,3 @@
-// import { Transaction } from "sequelize";
 import { Downvote, Upvote } from "../models";
 
 export const hasUserUpvoted = async (userId: string, newsId: string) => {
