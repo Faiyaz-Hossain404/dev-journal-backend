@@ -13,6 +13,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.use("/api/news", newsRoutes);
 app.use("/api/news", commentRoutes);
 app.use("/api/categories", categoryRoutes);
